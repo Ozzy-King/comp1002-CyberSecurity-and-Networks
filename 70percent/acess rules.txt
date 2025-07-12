@@ -1,0 +1,52 @@
+router1 public (guest)
+guest <---done
+  accesslist guestIn
+    in
+	access-list 102 permit tcp 67.6.7.0 0.0.0.127 gt 0 any gt 0 (allow traffic from netwrok)
+      access-list 102 permit tcp any eq 80 67.6.7.0 0.0.0.127 gt 0 (allow traffic from internet)
+  accesslist guestOut
+    out
+      access-list 103 permit tcp 67.6.7.0 0.0.0.127 gt 0 any eq 80 (send inside traffic out)
+	access-list 103 permit tcp any eq 80 67.6.7.0 0.0.0.127 gt 0 (send outside traffic in)
+
+
+
+router2 private(sales, admin employee)
+sales team <---done
+  access list 101
+    in
+	access-list 101 permit tcp 67.6.7.192 0.0.0.31 gt 0 any gt 0 (allow traffic from netwrok)
+      access-list 101 permit tcp any eq 80 67.6.7.192 0.0.0.31 gt 0 (allow traffic from internet)
+  access list 100
+    out
+      access-list 100 permit tcp 67.6.7.192 0.0.0.31 gt 0 any eq 80 (send inside traffic out)
+	access-list 100 permit tcp any eq 80 67.6.7.192 0.0.0.31 gt 0 (send outside traffic in)
+
+admin <---done
+  accesslist adminIn
+    in
+	access-list 102 permit tcp 67.6.7.128 0.0.0.31 gt 0 any gt 0 (allow traffic from netwrok)
+      access-list 102 permit tcp any eq 80 67.6.7.128 0.0.0.31 gt 0 (allow traffic from internet)
+  accesslist adminOut
+    out
+      access-list 103 permit tcp 67.6.7.128 0.0.0.31 gt 0 any eq 80 (send inside traffic out)
+	access-list 103 permit tcp any eq 80 67.6.7.128 0.0.0.31 gt 0 (send outside traffic in)
+
+employee
+  accesslist employeeIn (in)
+    access-list 102 permit tcp 67.6.7.224 0.0.0.31 gt 0 any gt 0 (allow traffic from netwrok)
+    access-list 102 permit tcp any eq 80 67.6.7.224 0.0.0.31 gt 0 (allow traffic from internet)
+
+    access-list 102 permit tcp 67.6.7.160 0.0.0.15 gt 0 67.6.7.224 0.0.0.31 gt 0 (in from private servers)
+
+    access-list 102 permit icmp 67.6.7.160 0.0.0.15 67.6.7.224 0.0.0.31 (ping in from private servers)
+    access-list 102 permit icmp 67.6.7.224 0.0.0.31 67.6.7.160 0.0.0.15 (ping in from private servers)<--add
+
+  accesslist employeeOut (out)
+    access-list 103 permit tcp 67.6.7.224 0.0.0.31 gt 0 any eq 80 (send inside traffic out)
+    access-list 103 permit tcp any eq 80 67.6.7.224 0.0.0.31 gt 0 (send outside traffic in)
+
+    access-list 103 permit tcp 67.6.7.224 0.0.0.31 gt 0 67.6.7.160 0.0.0.15 gt 0(out to priate servers)
+
+    access-list 103 permit icmp 67.6.7.224 0.0.0.31 67.6.7.160 0.0.0.15 (ping out to priate servers)
+    access-list 102 permit icmp 67.6.7.160 0.0.0.15 67.6.7.224 0.0.0.31 (ping in from private servers)<--add
